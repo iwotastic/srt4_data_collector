@@ -7,7 +7,9 @@
 </head>
 <body>
   <div class="container">
-    <h1>{{ title }}</h1>
+    {{ content|safe }}
   </div>
+  <script src="{{ url_for('static', filename='form.js') }}"></script>
+  <script src="{{ url_for('static', filename=form_script) }}"></script>
 </body>
 </html>
