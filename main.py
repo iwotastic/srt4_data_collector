@@ -8,7 +8,24 @@ def test_form():
 
 @app.route("/directions")
 def directions():
-  return render_template("directions.html", name="Ian")
+  session_id = request.cookies["sessionID"]
+  if not session_id in sessions:
+    abort(403)
+
+  session = sessions[session_id]
+  return render_template("directions.html", name=session.user_name)
+
+@app.route("/set-name", methods=["POST"])
+def set_name():
+  session_id = request.cookies["sessionID"]
+  if session_id in sessions and request.is_json and "name" in request.json:
+    if request.json["name"].strip() != "":
+      sessions[session_id].user_name = request.json["name"]
+      return {"continue": True}
+    else:
+      return {"continue": False, "message": "Please enter a name"}
+  else:
+    abort(403)
 
 @app.route("/welcome")
 def welcome():

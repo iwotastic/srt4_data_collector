@@ -1,5 +1,5 @@
 // Helpful constant that aliases $ to querySelector
-const $ = q => doument.querySelector(q)
+const $ = q => document.querySelector(q)
 
 // Helper function to submit data to the server
 const submitData = (url, data) => {

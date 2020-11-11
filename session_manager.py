@@ -40,4 +40,9 @@ class SessionManager:
     """
     return self.sessions[key]
 
+  def __contains__(self, session_id):
+    """Checks if `session_id` is in the session map.
+    """
+    return session_id in self.sessions.keys()
+
 sessions = SessionManager()
