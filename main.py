@@ -1,10 +1,20 @@
 from flask import Flask, abort, render_template, request, make_response
 from session_manager import sessions
+import json
 app = Flask(__name__)
 
-@app.route("/test_form")
-def test_form():
-  return render_template("form.html", title="Hello World!", content="<h1>Hello World</h1>", form_id="0")
+with open("form_index.json") as form_index:
+  forms = json.load(form_index)
+
+@app.route("/form/<int:form_number>")
+def form(form_number):
+  if form_number in range(len(forms)):
+    form_data = forms[form_number]
+
+    with open("forms/" + form_data["name"] + ".html") as content_file:
+      content = content_file.read()
+
+    return render_template("form.html", title="Ian's SRT4 Project - " + form_data["displayName"], content=content, form_script=form_data["name"] + ".js")
 
 @app.route("/directions")
 def directions():
