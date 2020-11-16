@@ -7,8 +7,10 @@
 </head>
 <body>
   <div class="container">
+    <div id="alert-container"></div>
     {{ content|safe }}
   </div>
+  <script src="{{ url_for('static', filename='global.js') }}"></script>
   <script src="{{ url_for('static', filename='form.js') }}"></script>
   <script src="{{ url_for('static', filename=form_script) }}"></script>
 </body>
