@@ -2,5 +2,9 @@
   {
     "name": "contact",
     "displayName": "Contact"
+  },
+  {
+    "name": "signup",
+    "displayName": "Sign Up"
   }
 ]

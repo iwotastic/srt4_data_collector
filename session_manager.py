@@ -14,6 +14,8 @@ class Session:
     self.user_name = ""
     self.is_bot = invitee_id == None
     self.current_page = "welcome"
+    self.form_sequence = []
+    self.current_form = 0
 
 class SessionManager:
   """Class that should only be initialized once to manage project participation
@@ -30,7 +32,7 @@ class SessionManager:
     self.sessions[new_session.id] = new_session
     return new_session
 
-  def clear_session(self, session_id):
+  def __delitem__(self, session_id):
     """Deletes the session associated with `session_id`.
     """
     del self.sessions[session_id]

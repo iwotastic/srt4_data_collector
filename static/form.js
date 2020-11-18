@@ -152,6 +152,12 @@ const initForm = (validators) => {
         keyboardEvents,
         touchEvents,
         oneTimeChecks
+      }).then(r => r.json()).then(resp => {
+        if (resp.action === "reload") {
+          location.reload()
+        }else if (resp.action === "thank_you") {
+          location.href = "/thanks"
+        }
       })
     }
   }
