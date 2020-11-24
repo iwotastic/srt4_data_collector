@@ -13,14 +13,20 @@ class DatabaseManager:
     with open("dbconfig.json") as config_file:
       config = json.load(config_file)
 
-    self.conn = psycopg2.connect(
-      database="srt4_data",
-      user="iwotastic",
-      password=config["password"],
-      host="localhost"
-    )
+    self.dev_mode = config["env"] == "dev"
+
+    if not self.dev_mode:
+      self.conn = psycopg2.connect(
+        database="srt4_data",
+        user="iwotastic",
+        password=config["password"],
+        host="localhost"
+      )
 
   def lookup_invitee(self, invitee):
+    if self.dev_mode:
+      return "Dev Mode Group"
+
     with self.conn:
       with self.conn.cursor() as c:
         try:
@@ -35,6 +41,9 @@ class DatabaseManager:
     return None
 
   def add_submission(self, session_id, submission_data):
+    if self.dev_mode:
+      return
+
     with self.conn:
       with self.conn.cursor() as c:
         try:
@@ -46,6 +55,9 @@ class DatabaseManager:
           pass
 
   def add_submitter(self, session):
+    if self.dev_mode:
+      return
+
     with self.conn:
       with self.conn.cursor() as c:
         try:

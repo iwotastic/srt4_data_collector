@@ -11,12 +11,13 @@
     <p class="lead">
       Hello {{ name }} and welcome to my SRT IV project! Please read the following directions carefully.
     </p>
-    <p>
-      When you click "Next" below, you will be shown a series of five forms. The exact forms and the order in which they will be shown you will be shown will vary between you and other people and even between times that you may have participated in my project in the past.
-    </p>
-    <p>
-      Some of the forms may look like "Sign In" or "Sign Up" forms. Since you do not have an account and are not making an account, you probably won't know what to type here. For the username box, just type a username you use for something else, it could be for school or for your favorite social media. For the password box, just make something up. I do not log or save your password anywhere, nor does it ever leave your computer. For any other text box that you are unsure of, just type something that makes sense based on what the form is asking for. Just make sure that you are typing it and not just copying and pasting from somewhere else.
-    </p>
+    <ul>
+      <li>When you click "Next" below you will be shown a random set of {{ num_forms_to_show }} forms.</li>
+      <li>Some of the forms may look like "Sign In" forms, you don't actually have an account so just make something up for your password.</li>
+      <li>Some of the forms may look like "Sign Up" forms, you aren't really making an account so just make something up for your password (you will not need to remember it).</li>
+      <li>For any other text box that you are unsure of, just make something up. Just don't copy and paste something into the text boxes, you must type in them yourself.</li>
+      <li>Text or passwords from these forms will never leave your computer, so you don't have to worry about anything being logged.</li>
+    </ul>
 
     <button id="next" class="btn btn-success">Next</button>
   </div>

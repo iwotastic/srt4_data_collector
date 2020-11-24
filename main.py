@@ -94,7 +94,7 @@ def welcome():
     abort(403)
 
   session = sessions.add_session(invitee_id)
-  resp = make_response(render_template("welcome.html", invitee_desc=invitee_desc))
+  resp = make_response(render_template("welcome.html", num_forms_to_show=num_forms_to_show))
   resp.set_cookie("sessionID", session.id)
   return resp
 
