@@ -4,12 +4,12 @@ initForm([
     func: el => el.value.trim() !== "" ? null : "Please enter a name."
   },
   {
-    selector: "#email",
-    func: el => el.value.trim() !== "" ? null : "Please enter an email."
+    selector: "#title",
+    func: el => el.value.trim() !== "" ? null : "Please enter a title."
   },
   {
-    selector: "#subject",
-    func: el => el.value.trim() !== "" ? null : "Please enter a subject."
+    selector: "#recommend",
+    func: el => el.value !== "" ? null : "Please select whether you reccomend it."
   },
   {
     selector: "#msg",
