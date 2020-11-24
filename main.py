@@ -1,5 +1,6 @@
 from flask import Flask, abort, render_template, request, make_response
 from session_manager import sessions
+from db_manager import DatabaseManager
 import random
 import json
 app = Flask(__name__)
@@ -28,6 +29,7 @@ def submit_interaction_data():
   
   session = sessions[session_id]
   if request.is_json:
+    DatabaseManager.default().add_submission(session_id, str(request.data))
     session.current_form += 1
 
     if session.current_form < num_forms_to_show:
@@ -74,6 +76,7 @@ def set_name():
   if session_id in sessions and request.is_json and "name" in request.json:
     if request.json["name"].strip() != "":
       sessions[session_id].user_name = request.json["name"]
+      DatabaseManager.default().add_submitter(sessions[session_id])
       return {"continue": True}
     else:
       return {"continue": False, "message": "Please enter a name"}
@@ -86,8 +89,12 @@ def welcome():
   if invitee_id == None:
     abort(403)
 
+  invitee_desc = DatabaseManager.default().lookup_invitee(invitee_id)
+  if invitee_desc == None:
+    abort(403)
+
   session = sessions.add_session(invitee_id)
-  resp = make_response(render_template("welcome.html"))
+  resp = make_response(render_template("welcome.html", invitee_desc=invitee_desc))
   resp.set_cookie("sessionID", session.id)
   return resp
 

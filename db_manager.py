@@ -20,14 +20,42 @@ class DatabaseManager:
       host="localhost"
     )
 
-  def check_for_invitee(self, invitee):
+  def lookup_invitee(self, invitee):
     with self.conn:
       with self.conn.cursor() as c:
-        c.execute("SELECT id FROM invite_groups WHERE id=%s", (invitee,))
-        if c.fetchone():
-          return True
+        try:
+          c.execute("SELECT description FROM invite_groups WHERE id=%s", (invitee,))
+        except:
+          return None
 
-    return False
+        result = c.fetchone()
+        if result:
+          return result[0]
+        
+    return None
+
+  def add_submission(self, session_id, submission_data):
+    with self.conn:
+      with self.conn.cursor() as c:
+        try:
+          c.execute("INSERT INTO submissions VALUES (%s, %s)", (
+            session_id,
+            submission_data
+          ))
+        except:
+          pass
+
+  def add_submitter(self, session):
+    with self.conn:
+      with self.conn.cursor() as c:
+        try:
+          c.execute("INSERT INTO submitters VALUES (%s, %s, %s)", (
+            session.id,
+            session.invitee_id,
+            session.user_name
+          ))
+        except:
+          pass
 
   @classmethod
   def default(cls):
