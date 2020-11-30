@@ -122,5 +122,34 @@ def welcome():
   resp.set_cookie("sessionID", session.id)
   return resp
 
+# Bot routes
+def bot_form_route_for(form):
+  """Generates a route handler for a given `form`.
+  """
+  def render_route():
+    """Render page to load `form` upon request.
+    """
+    with open("forms/" + form["name"] + ".html") as content_file:
+      content = content_file.read()
+
+    return render_template(
+      "form.html",
+      title=form['displayName'],
+      content=content,
+      form_script=form["name"] + ".js"
+    )
+
+  return render_route
+
+for form in forms:
+  app.add_url_rule(
+    f"/{form['name']}",
+    f"bot_form.{form['name']}",
+    bot_form_route_for(form)
+  )
+
+print(form)
+
+# Finally, run the server, assuming this is the called file...
 if __name__ == "__main__":
   app.run()
