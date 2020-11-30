@@ -3,6 +3,8 @@ from session_manager import sessions
 from db_manager import DatabaseManager
 import random
 import json
+
+# Initial setup
 app = Flask(__name__)
 
 with open("form_index.json") as form_index:
@@ -10,8 +12,11 @@ with open("form_index.json") as form_index:
 
 num_forms_to_show = 5
 
+# Human routes
 @app.route("/thanks")
 def thanks():
+  """Route to render "Thank You" page, completing the navigation flow.
+  """
   session_id = request.cookies["sessionID"]
   if not session_id in sessions:
     abort(403)
@@ -23,6 +28,8 @@ def thanks():
 
 @app.route("/submit-interaction-data", methods=["POST"])
 def submit_interaction_data():
+  """Route to collect interaction data and log it to the database.
+  """
   session_id = request.cookies["sessionID"]
   if not session_id in sessions:
     abort(403)
@@ -42,6 +49,9 @@ def submit_interaction_data():
 
 @app.route("/form")
 def form():
+  """Route to dynamically fetch the correct form to display to the user based
+  on their pre-selected order. This will be called `num_forms_to_show` times.
+  """
   session_id = request.cookies["sessionID"]
   if not session_id in sessions:
     abort(403)
@@ -55,13 +65,19 @@ def form():
 
   return render_template(
     "form.html",
-    title=f"Ian's SRT4 Project - Form {session.current_form + 1}/{num_forms_to_show} - {form_data['displayName']}",
+    title=(
+      "Ian's SRT4 Project - Form "
+      f"{session.current_form + 1}/{num_forms_to_show} - "
+      f"{form_data['displayName']}"
+    ),
     content=content,
     form_script=form_data["name"] + ".js"
   )
 
 @app.route("/directions")
 def directions():
+  """Route to display initial directions before loading the forms.
+  """
   session_id = request.cookies["sessionID"]
   if not session_id in sessions:
     abort(403)
@@ -72,6 +88,9 @@ def directions():
 
 @app.route("/set-name", methods=["POST"])
 def set_name():
+  """Route to set the user's name. This will update their name in their
+  `Session` and add a row to the `submitters` table.
+  """
   session_id = request.cookies["sessionID"]
   if session_id in sessions and request.is_json and "name" in request.json:
     if request.json["name"].strip() != "":
@@ -85,6 +104,8 @@ def set_name():
 
 @app.route("/welcome")
 def welcome():
+  """Route to welcome users to the project and request their name. 
+  """
   invitee_id = request.args["invitee_id"]
   if invitee_id == None:
     abort(403)
@@ -94,7 +115,10 @@ def welcome():
     abort(403)
 
   session = sessions.add_session(invitee_id)
-  resp = make_response(render_template("welcome.html", num_forms_to_show=num_forms_to_show))
+  resp = make_response(render_template(
+    "welcome.html",
+    num_forms_to_show=num_forms_to_show
+  ))
   resp.set_cookie("sessionID", session.id)
   return resp
 
