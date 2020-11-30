@@ -8,7 +8,7 @@ app = Flask(__name__)
 with open("form_index.json") as form_index:
   forms = json.load(form_index)
 
-num_forms_to_show = 4
+num_forms_to_show = 5
 
 @app.route("/thanks")
 def thanks():
