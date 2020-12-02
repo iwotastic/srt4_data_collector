@@ -1,4 +1,4 @@
-from flask import Flask, abort, render_template, request, make_response
+from flask import Flask, abort, redirect, render_template, request, make_response, url_for
 from session_manager import sessions
 from db_manager import DatabaseManager
 import random
@@ -57,6 +57,14 @@ def form():
     abort(403)
 
   session = sessions[session_id]
+  if session.user_name == "":
+    # Wow! The user discovered teleportation, they still need to enter their
+    # name though...
+    return redirect(url_for("welcome"))
+  elif session.current_form == num_forms_to_show:
+    # The user was somehow sent back here from the last form, not sure how
+    # that would happen, but, let's send them to thank you again...
+    return redirect(url_for("thanks"))
 
   form_data = forms[session.form_sequence[session.current_form]]
 
@@ -83,6 +91,18 @@ def directions():
     abort(403)
 
   session = sessions[session_id]
+  if session.user_name == "":
+    # Wow! The user discovered teleportation, they still need to enter their
+    # name though...
+    return redirect(url_for("welcome"))
+  elif session.current_form == num_forms_to_show:
+    # The user was somehow sent back here from the last form, not sure how
+    # that would happen, but, let's send them to thank you again...
+    return redirect(url_for("thanks"))
+  elif session.current_form > 0:
+    # The user should be on a form, so send them there...
+    return redirect(url_for("form"))
+
   session.form_sequence = random.sample(range(len(forms)), num_forms_to_show)
   return render_template("directions.html", name=session.user_name)
 
@@ -93,11 +113,21 @@ def set_name():
   """
   session_id = request.cookies["sessionID"]
   if session_id in sessions and request.is_json and "name" in request.json:
+    # Check if the user has already set a name
+    if sessions[session_id].user_name != "":
+      # If so, return with with a continue to bump them to directions. It is
+      # assumed that no database transaction is required because that will
+      # have already occured if their user_name isn't blank.
+      return {"continue": True}
+
+    # Did the user actually enter a name...
     if request.json["name"].strip() != "":
+      # If they did, add them to the database...
       sessions[session_id].user_name = request.json["name"]
       DatabaseManager.default().add_submitter(sessions[session_id])
       return {"continue": True}
     else:
+      # If they didn't, hit them with an error...
       return {"continue": False, "message": "Please enter a name"}
   else:
     abort(403)
@@ -106,6 +136,31 @@ def set_name():
 def welcome():
   """Route to welcome users to the project and request their name. 
   """
+
+  # If the user went back a page, let's put them where they belong...
+  session_id = ""
+  if "sessionID" in request.cookies:
+    session_id = request.cookies["sessionID"]
+
+  send_new_session = True
+  if session_id in sessions:
+    session = sessions[session_id]
+
+    if session.user_name == "":
+      # The user simply reloaded the welcome page, fall through, but don't
+      # create a new session.
+      send_new_session = False
+    elif session.current_form == 0:
+      # The user was on either directions or form 0, send them to directions...
+      return redirect(url_for("directions"))
+    elif session.current_form == num_forms_to_show:
+      # The user was somehow sent back here from the last form, not sure how
+      # that would happen, but, let's send them to thank you again...
+      return redirect(url_for("thanks"))
+    else:
+      # By process of elimination, the user should be on a form...
+      return redirect(url_for("form"))
+
   invitee_id = request.args["invitee_id"]
   if invitee_id == None:
     abort(403)
@@ -114,12 +169,15 @@ def welcome():
   if invitee_desc == None:
     abort(403)
 
-  session = sessions.add_session(invitee_id)
   resp = make_response(render_template(
     "welcome.html",
     num_forms_to_show=num_forms_to_show
   ))
-  resp.set_cookie("sessionID", session.id)
+
+  if send_new_session:
+    session = sessions.add_session(invitee_id)
+    resp.set_cookie("sessionID", session.id)
+
   return resp
 
 # Bot routes
@@ -147,8 +205,6 @@ for form in forms:
     f"bot_form.{form['name']}",
     bot_form_route_for(form)
   )
-
-print(form)
 
 # Finally, run the server, assuming this is the called file...
 if __name__ == "__main__":
