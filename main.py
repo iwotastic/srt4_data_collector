@@ -181,6 +181,35 @@ def welcome():
   return resp
 
 # Bot routes
+@app.route("/submit", methods=["POST"])
+def submit_bot_interaction_data():
+  """Route to collect bot interaction data and log it to the database.
+  """
+  session_id = request.cookies["sessionID"]
+  if not session_id in sessions:
+    abort(403)
+  
+  session = sessions[session_id]
+  if not session.is_bot:
+    abort(403)
+
+  if request.is_json:
+    DatabaseManager.default().add_bot_submission(session, str(request.data))
+
+    resp = make_response({"status": "success"})
+
+    resp.set_cookie("sessionID", "", expires=0)
+    return resp
+  
+  else:
+    abort(404)
+
+@app.route("/done")
+def bot_done_page():
+  """Route to show a fake confirmation page to bots.
+  """
+  return render_template("done.html", return_url=request.args["return_url"])
+
 def bot_form_route_for(form):
   """Generates a route handler for a given `form`.
   """
@@ -190,12 +219,22 @@ def bot_form_route_for(form):
     with open("forms/" + form["name"] + ".html") as content_file:
       content = content_file.read()
 
-    return render_template(
+    resp = make_response(render_template(
       "form.html",
       title=form['displayName'],
       content=content,
       form_script=form["name"] + ".js"
-    )
+    ))
+
+    # Initialize and send bot session
+    bot_source = "internet"
+    if "bot_source" in request.args:
+      bot_source = str(request.args["bot_source"])[:10]
+
+    session = sessions.add_session(bot_source=bot_source)
+    resp.set_cookie("sessionID", session.id)
+
+    return resp
 
   return render_route
 
@@ -205,6 +244,13 @@ for form in forms:
     f"bot_form.{form['name']}",
     bot_form_route_for(form)
   )
+
+# Home page for either bots or humans
+@app.route("/")
+def index():
+  """Route to show index page to bots.
+  """
+  return render_template("index.html", forms=forms)
 
 # Finally, run the server, assuming this is the called file...
 if __name__ == "__main__":

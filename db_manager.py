@@ -53,6 +53,20 @@ class DatabaseManager:
           ))
         except:
           pass
+  
+  def add_bot_submission(self, session, submission_data):
+    if self.dev_mode:
+      return
+
+    with self.conn:
+      with self.conn.cursor() as c:
+        try:
+          c.execute("INSERT INTO bot_submissions VALUES (%s, %s)", (
+            session.bot_source,
+            submission_data
+          ))
+        except:
+          pass
 
   def add_submitter(self, session):
     if self.dev_mode:

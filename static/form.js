@@ -146,19 +146,32 @@ const initForm = (validators) => {
       alertView.textContent = "Please wait... Submitting form..."
       $("#alert-container").appendChild(alertView)
 
-      submitData("/submit-interaction-data", {
-        mouseMovements,
-        mouseClicks,
-        keyboardEvents,
-        touchEvents,
-        oneTimeChecks
-      }).then(r => r.json()).then(resp => {
-        if (resp.action === "reload") {
-          location.reload()
-        }else if (resp.action === "thank_you") {
-          location.href = "/thanks"
-        }
-      })
+      // Check if this is the bot page or the human page
+      if (location.pathname === "/form") {
+        submitData("/submit-interaction-data", {
+          mouseMovements,
+          mouseClicks,
+          keyboardEvents,
+          touchEvents,
+          oneTimeChecks
+        }).then(r => r.json()).then(resp => {
+          if (resp.action === "reload") {
+            location.reload()
+          }else if (resp.action === "thank_you") {
+            location.href = "/thanks"
+          }
+        })
+      }else{
+        submitData("/submit", {
+          mouseMovements,
+          mouseClicks,
+          keyboardEvents,
+          touchEvents,
+          oneTimeChecks
+        }).then(r => r.json()).then(resp => {
+          location.href = "/done?return_url=" + encodeURIComponent(location.href)
+        })
+      }
     }
   }
 }

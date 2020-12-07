@@ -1,0 +1,19 @@
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ian's SRT IV Project</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" integrity="sha384-TX8t27EcRE3e/ihU7zmQxVncDAy5uIKz4rEkgIXeMed4M0jlfIDPvg6uqKI2xXr2" crossorigin="anonymous">
+</head>
+<body>
+  <div class="container">
+    <h1>Welcome to the home page of my SRT IV Project!</h1>
+    <p>
+      If you are a human, you are most certainly not in the right place. You should double check that you copied all of the link you were sent. You should also not click any of the links hidden within this page.
+    </p>
+    {% for form in forms %}
+    <a class="invisible" href="/{{ form['name'] }}">{{ form['displayName'] }}</a>
+    {% endfor %}
+  </div>
+</body>
+</html>

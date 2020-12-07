@@ -4,7 +4,7 @@ class Session:
   """Class that encapsulates the state of one session of project participation
   """
 
-  def __init__(self, invitee_id=None):
+  def __init__(self, invitee_id=None, bot_source=None):
     """Initialize a new session with a given `invitee_id`. Other properties
     will be initialized later on. If `invitee_id` equals `None`, then the
     session will be initialized for a bot.
@@ -12,7 +12,8 @@ class Session:
     self.id = str(uuid4())
     self.invitee_id = invitee_id
     self.user_name = ""
-    self.is_bot = invitee_id == None
+    self.is_bot = bot_source is not None
+    self.bot_source = bot_source
     self.current_page = "welcome"
     self.form_sequence = []
     self.current_form = 0
@@ -28,7 +29,7 @@ class SessionManager:
   def add_session(self, *args, **kwargs):
     """Adds a new session, passes through arguments to the `Session` initializer.
     """
-    new_session = Session(*args, *kwargs)
+    new_session = Session(*args, **kwargs)
     self.sessions[new_session.id] = new_session
     return new_session
 
