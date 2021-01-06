@@ -1,5 +1,6 @@
 import psycopg2
 import json
+from uuid import uuid4
 
 class DatabaseManager:
   _default = None
@@ -56,6 +57,8 @@ class DatabaseManager:
   
   def add_bot_submission(self, session, submission_data):
     if self.dev_mode:
+      with open(f"bot_log/{uuid4()}.json", "w") as log_file:
+        log_file.write(submission_data)
       return
 
     with self.conn:
