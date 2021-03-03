@@ -1,6 +1,8 @@
 from flask import Flask, abort, redirect, render_template, request, make_response, url_for
 from session_manager import sessions
 from db_manager import DatabaseManager
+from evaluate_submission import evaluate_submission
+import functools
 import random
 import json
 
@@ -22,9 +24,19 @@ def thanks():
     abort(403)
 
   session = sessions[session_id]
+  raw_scores = session.scores
   name = session.user_name
   del sessions[session_id]
-  return render_template("thankyou.html", name=name)
+
+  scores = [{
+    "browser": "human" if page_scores["browser"][0][0] > page_scores["browser"][0][1] else "bot",
+    "keyboard_human": functools.reduce(lambda accum, batch: accum + (1 if batch[0][0] > batch[0][1] else 0), page_scores["keyboard"], 0),
+    "keyboard_bot": functools.reduce(lambda accum, batch: accum + (1 if batch[0][0] < batch[0][1] else 0), page_scores["keyboard"], 0),
+    "mouse_human": functools.reduce(lambda accum, batch: accum + (1 if batch[0][0] > batch[0][1] else 0), page_scores["mouse"], 0),
+    "mouse_bot": functools.reduce(lambda accum, batch: accum + (1 if batch[0][0] < batch[0][1] else 0), page_scores["mouse"], 0)
+  } for page_scores in raw_scores]
+
+  return render_template("thankyou.html", name=name, scores=enumerate(scores))
 
 @app.route("/submit-interaction-data", methods=["POST"])
 def submit_interaction_data():
@@ -36,6 +48,7 @@ def submit_interaction_data():
   
   session = sessions[session_id]
   if request.is_json:
+    session.scores.append(evaluate_submission(str(request.data)[2:-1]))
     DatabaseManager.default().add_submission(session_id, str(request.data))
     session.current_form += 1
 

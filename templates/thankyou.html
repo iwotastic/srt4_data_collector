@@ -15,6 +15,35 @@
       <li>My project is based on training a machine learning model to tell if a user is a human or a bot, so every bit of human data I can get is <b>very much appreciated</b>.</li>
       <li>You are now <b>done with my project</b> and can now <b>close this browser window or tab</b>.</li>
     </ul>
+    <h2>Results for Nerds</h2>
+    <p>
+      If you want to see how much of a robot you are, here is a nifty breakdown of your scores.
+    </p>
+    {% for index, page in scores %}
+      <h3>Form {{ index + 1 }}</h3>
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Category</th>
+            <th>Result</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Browser Attributes</td>
+            <td>{{ page["browser"] }}</td>
+          </tr>
+          <tr>
+            <td>Keyboard Events</td>
+            <td>{{ page["keyboard_human"] }} parts human, {{ page["keyboard_bot"] }} parts bot</td>
+          </tr>
+          <tr>
+            <td>Mouse Movement</td>
+            <td>{{ page["mouse_human"] }} parts human, {{ page["mouse_bot"] }} parts bot</td>
+          </tr>
+        </tbody>
+      </table>
+    {% endfor %}
   </div>
 </body>
 </html>

@@ -18,5 +18,9 @@
   {
     "name": "post",
     "displayName": "Post a Message"
+  },
+  {
+    "name": "joinroom",
+    "displayName": "Join Room"
   }
 ]

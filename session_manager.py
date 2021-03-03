@@ -17,6 +17,7 @@ class Session:
     self.current_page = "welcome"
     self.form_sequence = []
     self.current_form = 0
+    self.scores = []
 
 class SessionManager:
   """Class that should only be initialized once to manage project participation
