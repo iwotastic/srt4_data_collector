@@ -1,4 +1,3 @@
-import psycopg2
 import json
 from uuid import uuid4
 
@@ -17,6 +16,8 @@ class DatabaseManager:
     self.dev_mode = config["env"] == "dev"
 
     if not self.dev_mode:
+      import psycopg2
+      
       self.conn = psycopg2.connect(
         database="srt4_data",
         user="iwotastic",

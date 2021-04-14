@@ -22,5 +22,9 @@
   {
     "name": "joinroom",
     "displayName": "Join Room"
+  },
+  {
+    "name": "registration",
+    "displayName": "Register for a thing"
   }
 ]

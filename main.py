@@ -267,4 +267,4 @@ def index():
 
 # Finally, run the server, assuming this is the called file...
 if __name__ == "__main__":
-  app.run()
+  app.run(host="0.0.0.0")

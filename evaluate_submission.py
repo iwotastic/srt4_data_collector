@@ -3,9 +3,9 @@ import tensorflow as tf
 import json
 
 # Preload the models
-browser_attributes = tf.keras.models.load_model("model/browser_attributes")
-keyboard_events = tf.keras.models.load_model("model/keyboard_events")
-mouse_movements = tf.keras.models.load_model("model/mouse_movements")
+browser_attributes = tf.keras.models.load_model("model/browser_attributes_v2")
+keyboard_events = tf.keras.models.load_model("model/keyboard_events_v2")
+mouse_movements = tf.keras.models.load_model("model/mouse_movements_v2")
 
 # Helper functions
 def to_binary_number(boolean):
